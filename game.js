@@ -19,7 +19,27 @@
  *   the winning cells green, so it has to come back with the player.
  */
 export function getWinner(board) {
-  return null; // TODO(teammate): LINES = 3 rows + 3 cols + 2 diagonals, then check all 8
+  // All 8 possible winning lines: 3 rows, 3 columns, 2 diagonals
+  const LINES = [
+    [0, 1, 2], // top row
+    [3, 4, 5], // middle row
+    [6, 7, 8], // bottom row
+    [0, 3, 6], // left column
+    [1, 4, 7], // middle column
+    [2, 5, 8], // right column
+    [0, 4, 8], // diagonal top-left to bottom-right
+    [2, 4, 6], // diagonal top-right to bottom-left
+  ];
+
+  // Check each line — if all three cells match a non-null player, we have a winner
+  for (const line of LINES) {
+    const [a, b, c] = line;
+    if (board[a] && board[a] === board[b] && board[a] === board[c]) {
+      return { player: board[a], line };
+    }
+  }
+
+  return null; // no winner yet
 }
 
 /**
@@ -32,7 +52,16 @@ export function getWinner(board) {
  *   the same reference on a rejected move matters. Never mutate the input.
  */
 export function applyMove(board, index, player) {
-  return board; // TODO(teammate): validate, then return a new array
+  // Reject the move if the game is already won
+  if (getWinner(board)) return board;
+
+  // Reject the move if the cell is already occupied
+  if (board[index] !== null) return board;
+
+  // Valid move — create a new board array with the player's mark placed
+  const next = [...board];
+  next[index] = player;
+  return next;
 }
 
 /**
@@ -40,5 +69,6 @@ export function applyMove(board, index, player) {
  * @returns {boolean} true when every square is filled and there is no winner.
  */
 export function isDraw(board) {
-  return false; // TODO(teammate)
+  // A draw occurs when every cell is filled and nobody has won
+  return board.every((cell) => cell !== null) && !getWinner(board);
 }
